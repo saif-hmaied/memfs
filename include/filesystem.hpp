@@ -151,4 +151,11 @@ class Filesystem{
         }
         return tmp;
     }
+    bool cp(const std::string &from,const std::string &to,bool recursive){
+        auto f=solve_path(from),t=solve_path(to);
+        if(t==nullptr||f==nullptr||!t->is_directory()||(f->is_directory()&&!recursive)||f==root_)return false;
+        if(static_cast<Directory*>(t)->find_child(f->get_name())!=nullptr)return false;
+        static_cast<Directory*>(t)->add_child(f->clone());
+        return true;
+    }
 };

@@ -72,6 +72,12 @@ class Filesystem{
     const std::vector<Node*>& ls()const{
         return cwd_->get_children();
     }
+    const std::vector<Node*>*ls(std::string path){
+        auto cur=solve_path(path);
+        if(cur==nullptr||!cur->is_directory())return nullptr;
+        Directory* dir=static_cast<Directory*>(cur);
+        return &dir->get_children();
+    }
     std::string pwd()const{
         if(cwd_==root_)return "/";
         Node *tmp=cwd_;

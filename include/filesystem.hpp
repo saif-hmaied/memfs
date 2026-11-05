@@ -114,6 +114,20 @@ class Filesystem{
         delete del;
         return true;
     }
+    bool mv(const std::string &from,const std::string &to){
+        auto f=solve_path(from),t=solve_path(to);
+        if(f==nullptr||t==nullptr||!t->is_directory()||f==root_)return false;
+        Node* w=t;
+        while(w!=root_){
+            if(w==f)return false;
+            w=w->get_parent();
+        }
+        if(static_cast<Directory*>(t)->find_child(f->get_name())!=nullptr)return false;
+        Directory* dir=f->get_parent();
+        auto tmp=dir->remove_child(f->get_name());
+        static_cast<Directory*>(t)->add_child(tmp);
+        return true;
+    }
     bool cd(const std::string &path){
         auto cur=solve_path(path);
         if(cur==nullptr||!cur->is_directory())return false;

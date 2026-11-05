@@ -88,6 +88,32 @@ class Filesystem{
         }
         return ans;
     }
+    bool write(const std::string &path,const std::string &content){
+        auto cur=solve_path(path);
+        if(cur==nullptr||cur->is_directory())return false;
+        File* file=static_cast<File*>(cur);
+        file->set_content(content);
+        return true;
+    }
+    const std::string* cat(const std::string &path)const{
+        auto cur=solve_path(path);
+        if(cur==nullptr||cur->is_directory())return nullptr;
+        File* file=static_cast<File*>(cur);
+        return &file->get_content();
+    }
+    bool rm(const std::string &path,bool recursive){
+        auto cur=solve_path(path);
+        if(cur==nullptr||(cur->is_directory()&&!recursive)||cur==root_)return false;
+        Directory* w=cwd_;
+        while(w!=nullptr){
+            if(w==cur)return false;
+            w=w->get_parent();
+        }
+        Directory* tmp=cur->get_parent();
+        auto del=tmp->remove_child(cur->get_name());
+        delete del;
+        return true;
+    }
     bool cd(const std::string &path){
         auto cur=solve_path(path);
         if(cur==nullptr||!cur->is_directory())return false;

@@ -6,6 +6,28 @@
 class Filesystem{
     Directory *root_=nullptr;
     Directory *cwd_=nullptr;
+    private:
+    static std::vector<std::string> split_path(const std::string &path){
+        std::vector<std::string>ans;
+        int n=path.size();
+        int last=-1;
+        for(int i=0;i<n;i++){
+            if(path[i]=='/'){
+                std::string cur="";
+                for(int j=last+1;j<i;j++){
+                    cur+=path[j];
+                }
+                if(!cur.empty())ans.push_back(cur);
+                last=i;
+            }
+        }
+        std::string  cur="";
+        for(int i=last+1;i<n;i++){
+            cur+=path[i];
+        }
+        if(!cur.empty())ans.push_back(cur);
+        return ans;
+    }
     public:
     Filesystem():root_(new Directory("/")),cwd_(root_){}
     ~Filesystem(){
@@ -55,5 +77,21 @@ class Filesystem{
         cwd_=static_cast<Directory*>(tmp);
         return true;
     }
-
+    Node* solve_path(const std::string &path)const{
+        auto parts=split_path(path);
+        if(path.empty())return cwd_;
+        Node* tmp=(path[0]=='/'?root_:cwd_);
+        for(std::size_t i=0;i<parts.size();i++){
+            if(parts[i]==".")continue;
+            if(parts[i]==".."){
+                if(tmp->get_parent()==nullptr)return nullptr;
+                tmp=tmp->get_parent();
+                continue;
+            }
+            Node* nxt=static_cast<Directory*>(tmp)->find_child(parts[i]);
+            if(nxt==nullptr||(!nxt->is_directory()&&i!=parts.size()-1))return nullptr;
+            tmp=nxt;
+        }
+        return tmp;
+    }
 };

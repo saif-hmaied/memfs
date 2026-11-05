@@ -16,6 +16,11 @@ class File: public Node{
     bool is_directory()const override{
         return false;
     }
+    Node* clone()const override{
+        File* file=new File(this->get_name());
+        file->content_=this->content_;
+        return file;
+    }
     std::size_t size()const override{
         return content_.size();
     }

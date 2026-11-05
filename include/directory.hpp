@@ -50,6 +50,13 @@ class Directory:public Node{
     bool is_directory()const override{
         return true;
     }
+    Node* clone()const override{
+        Directory* dir=new Directory(this->get_name());
+        for(auto elem:this->children_){
+            dir->add_child(elem->clone());
+        }
+        return dir;
+    }
     Directory(const Directory&)=delete;
     Directory& operator=(const Directory&)=delete;
 };

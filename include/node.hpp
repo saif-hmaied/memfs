@@ -14,6 +14,7 @@ class Node{
     virtual ~Node(){
         count--;
     }
+    virtual Node* clone()const=0;
     //getters
     const std::string& get_name()const{
         return name_;

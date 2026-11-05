@@ -3,6 +3,7 @@
 #include "directory.hpp"
 #include <string>
 #include <vector>
+#include<algorithm>
 class Filesystem{
     Directory *root_=nullptr;
     Directory *cwd_=nullptr;
@@ -36,16 +37,36 @@ class Filesystem{
     Filesystem(const Filesystem&)=delete;
     Filesystem& operator=(const Filesystem&)=delete;
 
-    bool mkdir(const std::string& name){
-        if(cwd_->find_child(name)!=nullptr)return false;
+    bool mkdir(std::string path){
+        std::string name="";
+        while(!path.empty()&&path.back()!='/'){
+            name+=path.back();
+            path.pop_back();
+        }
+        if(name.empty()||name==".."||name==".")return false;
+        reverse(name.begin(),name.end());
+        auto cur=solve_path(path);
+        if(cur==nullptr||!cur->is_directory())return false;
+        Directory* dir=static_cast<Directory*>(cur);
+        if(dir->find_child(name))return false;
         Directory *tmp=new Directory(name);
-        cwd_->add_child(tmp);
+        dir->add_child(tmp);
         return true;
     }
-    bool touch(const std::string &name){
-        if(cwd_->find_child(name)!=nullptr)return false;
+    bool touch(std::string path){
+        std::string name="";
+        while(!path.empty()&&path.back()!='/'){
+            name+=path.back();
+            path.pop_back();
+        }
+        if(name.empty()||name==".."||name==".")return false;
+        std::reverse(name.begin(),name.end());
+        auto cur=solve_path(path);
+        if(cur==nullptr||!cur->is_directory())return false;
+        Directory* dir=static_cast<Directory*>(cur);
+        if(dir->find_child(name)!=nullptr)return false;
         File *tmp=new File(name);
-        cwd_->add_child(tmp);
+        dir->add_child(tmp);
         return true;
     }
     const std::vector<Node*>& ls()const{

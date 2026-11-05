@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(memfs src/main.cpp)
+target_include_directories(memfs PRIVATE include)
 target_compile_options(memfs PRIVATE -Wall -Wextra -Wpedantic)

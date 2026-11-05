@@ -61,20 +61,10 @@ class Filesystem{
         }
         return ans;
     }
-    bool cd(const std::string &name){
-        if(name==".."){
-            if(cwd_==root_)return false;
-            cwd_=cwd_->get_parent();
-            return true;
-        }
-        if(name=="/"){
-            cwd_=root_;
-            return true;
-        }
-        Node *tmp=cwd_->find_child(name);
-        if(tmp==nullptr)return false;
-        if(!tmp->is_directory())return false;
-        cwd_=static_cast<Directory*>(tmp);
+    bool cd(const std::string &path){
+        auto cur=solve_path(path);
+        if(cur==nullptr||!cur->is_directory())return false;
+        cwd_=static_cast<Directory*>(cur);
         return true;
     }
     Node* solve_path(const std::string &path)const{
